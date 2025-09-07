@@ -9,12 +9,12 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 
-const defaultMermaidCode = `graph TD
-    A[Start] --> B{Is it working?}
-    B -->|Yes| C[Great!]
-    B -->|No| D[Debug]
-    D --> B
-    C --> E[End]`;
+const defaultMermaidCode = `flowchart TD
+    A[Christmas] -->|Get money| B(Go shopping)
+    B --> C{Let me think}
+    C -->|One| D[Laptop]
+    C -->|Two| E[iPhone]
+    C -->|Three| F[fa:fa-car Car]`;
 
 export default function Home() {
   const [mermaidContent, setMermaidContent] = useState(defaultMermaidCode);

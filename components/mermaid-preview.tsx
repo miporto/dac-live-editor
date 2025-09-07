@@ -18,6 +18,16 @@ export function MermaidPreview({ content }: MermaidPreviewProps) {
       theme: "default",
       securityLevel: "loose",
       fontFamily: "monospace",
+      flowchart: {
+        htmlLabels: true,
+        useMaxWidth: true,
+      },
+      sequence: {
+        useMaxWidth: true,
+      },
+      gantt: {
+        useMaxWidth: true,
+      },
     });
   }, []);
 
