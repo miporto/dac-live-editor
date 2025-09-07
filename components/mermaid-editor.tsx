@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useEffect } from "react";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 interface MermaidEditorProps {
   content: string;
@@ -11,6 +13,7 @@ interface MermaidEditorProps {
 export function MermaidEditor({ content, onChange, placeholder = "Enter your Mermaid diagram code..." }: MermaidEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const lineNumbersRef = useRef<HTMLDivElement>(null);
+  const highlightRef = useRef<HTMLDivElement>(null);
 
   const updateLineNumbers = () => {
     if (!textareaRef.current || !lineNumbersRef.current) return;
@@ -25,8 +28,10 @@ export function MermaidEditor({ content, onChange, placeholder = "Enter your Mer
   };
 
   const handleScroll = () => {
-    if (!textareaRef.current || !lineNumbersRef.current) return;
-    lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
+    if (!textareaRef.current || !lineNumbersRef.current || !highlightRef.current) return;
+    const scrollTop = textareaRef.current.scrollTop;
+    lineNumbersRef.current.scrollTop = scrollTop;
+    highlightRef.current.scrollTop = scrollTop;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -80,8 +85,47 @@ export function MermaidEditor({ content, onChange, placeholder = "Enter your Mer
           `}</style>
         </div>
         
-        {/* Code editor */}
-        <div className="flex-1">
+        {/* Code editor with syntax highlighting */}
+        <div className="flex-1 relative">
+          {/* Syntax highlighting overlay */}
+          <div 
+            ref={highlightRef}
+            className="absolute inset-0 pointer-events-none overflow-hidden"
+          >
+            <SyntaxHighlighter
+              language="mermaid"
+              style={{
+                ...oneLight,
+                'pre[class*="language-"]': {
+                  ...oneLight['pre[class*="language-"]'],
+                  background: 'transparent',
+                  margin: 0,
+                  padding: '16px',
+                  fontSize: '14px',
+                  lineHeight: '24px',
+                  fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+                },
+                'code[class*="language-"]': {
+                  ...oneLight['code[class*="language-"]'],
+                  background: 'transparent',
+                  fontSize: '14px',
+                  lineHeight: '24px',
+                  fontFamily: 'ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace',
+                }
+              }}
+              customStyle={{
+                background: 'transparent',
+                margin: 0,
+                padding: '16px',
+                fontSize: '14px',
+                lineHeight: '24px',
+              }}
+            >
+              {content || ' '}
+            </SyntaxHighlighter>
+          </div>
+          
+          {/* Textarea */}
           <textarea
             ref={textareaRef}
             value={content}
@@ -90,10 +134,10 @@ export function MermaidEditor({ content, onChange, placeholder = "Enter your Mer
             onInput={updateLineNumbers}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full h-full resize-none border-none outline-none p-4 font-mono text-sm bg-transparent leading-6"
+            className="w-full h-full resize-none border-none outline-none p-4 font-mono text-sm bg-transparent leading-6 relative z-10 text-transparent caret-gray-400"
             style={{
               tabSize: 2,
-              minHeight: '384px'
+              minHeight: '384px',
             }}
           />
         </div>
