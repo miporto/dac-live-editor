@@ -29,6 +29,27 @@ export function MermaidEditor({ content, onChange, placeholder = "Enter your Mer
     lineNumbersRef.current.scrollTop = textareaRef.current.scrollTop;
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      
+      const textarea = textareaRef.current;
+      if (!textarea) return;
+      
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      
+      // Insert tab character at cursor position
+      const newValue = content.substring(0, start) + '\t' + content.substring(end);
+      onChange(newValue);
+      
+      // Set cursor position after the inserted tab
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + 1;
+      }, 0);
+    }
+  };
+
   useEffect(() => {
     updateLineNumbers();
   }, [content]);
@@ -67,6 +88,7 @@ export function MermaidEditor({ content, onChange, placeholder = "Enter your Mer
             onChange={(e) => onChange(e.target.value)}
             onScroll={handleScroll}
             onInput={updateLineNumbers}
+            onKeyDown={handleKeyDown}
             placeholder={placeholder}
             className="w-full h-full resize-none border-none outline-none p-4 font-mono text-sm bg-transparent leading-6"
             style={{
